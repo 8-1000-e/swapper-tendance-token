@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import { VersionedTransaction } from '@solana/web3.js'
+import { ExternalLink, X, Check } from 'lucide-react'
 import Card from '@/components/ui/Card'
 import AmountInput from './AmountInput'
 import SwapDirectionButton from './SwapDirectionButton'
@@ -47,6 +48,13 @@ export default function SwapWidget({ initialFromToken, initialToToken, compact }
   const [balances, setBalances] = useState<Record<string, number>>({})
   const [balanceRefresh, setBalanceRefresh] = useState(0)
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Auto-dismiss swap result after 8 seconds
+  useEffect(() => {
+    if (!swapResult) return
+    const timer = setTimeout(() => setSwapResult(null), 10000)
+    return () => clearTimeout(timer)
+  }, [swapResult])
 
   const outputAmount = quote
     ? (parseInt(quote.outAmount) / Math.pow(10, tokenTo.decimals)).toFixed(
@@ -324,23 +332,6 @@ export default function SwapWidget({ initialFromToken, initialToToken, compact }
             <p className="mt-2 text-xs text-red-400">{quoteError}</p>
           )}
 
-          {swapResult && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mt-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20"
-            >
-              <p className="text-xs text-green-400 font-medium mb-1">Swap successful!</p>
-              <a
-                href={`https://solscan.io/tx/${swapResult}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-green-300 hover:text-green-200 underline font-mono break-all"
-              >
-                {swapResult}
-              </a>
-            </motion.div>
-          )}
 
           {canSwap && quote && (
             <motion.div
@@ -366,6 +357,14 @@ export default function SwapWidget({ initialFromToken, initialToToken, compact }
             </motion.div>
           )}
 
+          {/* TODO: remove — test button for tx notification */}
+          <button
+            onClick={() => setSwapResult('4sGjMW1sUnHzSxGspuhSqLDJmpVZ6jbLaNfGbnQTSd3TGEHqYxRcUmhFqqASjPFpFdNWoihHAQjTGPYyY2Namode')}
+            className="mt-2 text-[10px] text-gray-600 hover:text-gray-400 transition-colors"
+          >
+            [test tx notif]
+          </button>
+
           <div className="mt-4">
             <SwapButton
               disabled={!canSwap}
@@ -383,6 +382,180 @@ export default function SwapWidget({ initialFromToken, initialToToken, compact }
         onSelect={handleSelectToken}
         excludeToken={selectorOpen === 'from' ? tokenTo : tokenFrom}
       />
+
+      {/* Celebratory swap success modal */}
+      <AnimatePresence>
+        {swapResult && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            onClick={() => setSwapResult(null)}
+          >
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
+
+            {/* Floating particles */}
+            {Array.from({ length: 20 }).map((_, i) => {
+              const colors = ['#39FF14', '#BF40BF', '#FFD700', '#00FFFF', '#FF6EC7']
+              const color = colors[Math.floor(Math.random() * colors.length)]
+              return (
+                <motion.div
+                  key={i}
+                  initial={{
+                    opacity: 0,
+                    y: 0,
+                    x: 0,
+                    scale: 0,
+                  }}
+                  animate={{
+                    opacity: [0, 1, 1, 0],
+                    y: [0, -200 - Math.random() * 300],
+                    x: [0, (Math.random() - 0.5) * 400],
+                    scale: [0, 1, 0.5],
+                    rotate: [0, Math.random() * 720 - 360],
+                  }}
+                  transition={{
+                    duration: 2 + Math.random() * 2,
+                    delay: Math.random() * 0.8,
+                    ease: 'easeOut',
+                  }}
+                  className="absolute z-0 pointer-events-none"
+                  style={{
+                    width: 4 + Math.random() * 8,
+                    height: 4 + Math.random() * 8,
+                    borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+                    background: color,
+                    boxShadow: `0 0 6px ${color}`,
+                  }}
+                />
+              )
+            })}
+
+            {/* Modal card */}
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0, y: 40 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', damping: 20, stiffness: 300, delay: 0.1 }}
+              className="relative z-10 w-full max-w-[420px]"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Subtle gradient border */}
+              <div
+                className="absolute -inset-[1px] rounded-3xl"
+                style={{
+                  background: 'linear-gradient(135deg, #BF40BF, #FF6EC7, #FFD700)',
+                  opacity: 0.4,
+                }}
+              />
+
+              <div className="relative bg-[#0D0D14] rounded-3xl p-8 overflow-hidden">
+                {/* Close button */}
+                <button
+                  onClick={() => setSwapResult(null)}
+                  className="absolute top-4 right-4 text-gray-600 hover:text-white transition-colors z-20"
+                >
+                  <X size={20} />
+                </button>
+
+                {/* Animated checkmark */}
+                <div className="flex justify-center mb-6 pt-2">
+                  <div className="relative">
+                    {/* Outer ring pulse */}
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: [0, 1.5, 1.2], opacity: [0, 0.3, 0] }}
+                      transition={{ delay: 0.4, duration: 1, ease: 'easeOut' }}
+                      className="absolute inset-0 rounded-full border-2 border-neon-green"
+                    />
+                    {/* Second ring */}
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: [0, 1.8, 1.5], opacity: [0, 0.2, 0] }}
+                      transition={{ delay: 0.5, duration: 1.2, ease: 'easeOut' }}
+                      className="absolute inset-0 rounded-full border border-neon-green"
+                    />
+                    {/* Checkmark circle */}
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', damping: 12, stiffness: 200, delay: 0.2 }}
+                      className="relative w-20 h-20 rounded-full flex items-center justify-center"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(57,255,20,0.2) 0%, rgba(57,255,20,0.05) 100%)',
+                        boxShadow: '0 0 30px rgba(57,255,20,0.25), inset 0 0 20px rgba(57,255,20,0.1)',
+                        border: '2px solid rgba(57,255,20,0.4)',
+                      }}
+                    >
+                      <motion.div
+                        initial={{ scale: 0, rotate: -45 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ type: 'spring', damping: 10, stiffness: 200, delay: 0.5 }}
+                      >
+                        <Check size={36} strokeWidth={3} className="text-neon-green" />
+                      </motion.div>
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Title */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                  className="text-center mb-2"
+                >
+                  <h3 className="text-2xl font-bold text-white">Swap Successful</h3>
+                </motion.div>
+
+                {/* Subtitle */}
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.7 }}
+                  className="text-center text-sm text-gray-500 mb-6"
+                >
+                  Your transaction has been confirmed on Solana
+                </motion.p>
+
+                {/* Transaction hash */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="mb-6"
+                >
+                  <div className="px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                    <p className="text-[10px] text-gray-600 uppercase tracking-wider font-medium mb-1.5">Transaction ID</p>
+                    <p className="text-xs font-mono text-gray-400 truncate">{swapResult}</p>
+                  </div>
+                </motion.div>
+
+                {/* CTA Button */}
+                <motion.a
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9 }}
+                  href={`https://solscan.io/tx/${swapResult}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-semibold text-sm text-black transition-all hover:brightness-110"
+                  style={{
+                    background: 'linear-gradient(135deg, #39FF14 0%, #2BD10F 100%)',
+                    boxShadow: '0 0 20px rgba(57,255,20,0.3), 0 4px 12px rgba(0,0,0,0.3)',
+                  }}
+                >
+                  View on Solscan
+                  <ExternalLink size={14} />
+                </motion.a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
