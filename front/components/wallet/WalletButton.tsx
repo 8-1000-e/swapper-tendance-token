@@ -14,13 +14,13 @@ const WalletMultiButton = dynamic(
 const DEEPLINK_WALLETS = [
   {
     name: 'Phantom',
-    icon: '/wallets/phantom.svg',
+    icon: '/wallets/phantom.png',
     buildUrl: (url: string) =>
       `https://phantom.app/ul/browse/${encodeURIComponent(url)}`,
   },
   {
     name: 'Solflare',
-    icon: '/wallets/solflare.svg',
+    icon: '/wallets/solflare.png',
     buildUrl: (url: string) =>
       `https://solflare.com/ul/v1/browse/${encodeURIComponent(url)}`,
   },
