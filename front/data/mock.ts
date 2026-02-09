@@ -491,7 +491,7 @@ export function getTokenByAddress(address: string): Token | undefined {
 }
 
 export function getTokensByCategory(category: TokenCategory): Token[] {
-  return MOCK_TOKENS.filter(t => t.category.includes(category))
+  return MOCK_TOKENS.filter(t => (t.category ?? []).includes(category))
 }
 
 export function searchTokens(query: string): Token[] {

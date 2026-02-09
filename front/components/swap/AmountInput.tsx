@@ -1,7 +1,7 @@
 'use client'
 
 import { Token } from '@/types'
-import { formatPrice, getTokenImageUrl, cn } from '@/lib/utils'
+import { formatPrice, cn } from '@/lib/utils'
 import { ChevronDown } from 'lucide-react'
 
 interface AmountInputProps {
@@ -72,10 +72,14 @@ export default function AmountInput({
           {token ? (
             <>
               <img
-                src={getTokenImageUrl(token.address)}
+                src={token.imageUrl || `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/${token.address}/logo.png`}
                 alt={token.symbol}
                 className="w-6 h-6 rounded-full"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                onError={e => {
+                  const img = e.target as HTMLImageElement
+                  img.onerror = null
+                  img.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="%231A1A28"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="16" font-family="sans-serif">${token.symbol.slice(0, 2)}</text></svg>`
+                }}
               />
               <span className="font-semibold text-sm">{token.symbol}</span>
             </>
