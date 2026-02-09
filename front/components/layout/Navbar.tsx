@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -31,6 +31,22 @@ export default function Navbar() {
   const [loading, setLoading] = useState(false)
   const [popularLoaded, setPopularLoaded] = useState(false)
   const abortRef = useRef<AbortController | null>(null)
+  const tapCountRef = useRef(0)
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleLogoTap = useCallback((e: React.MouseEvent) => {
+    if (window.innerWidth >= 768) return
+    tapCountRef.current++
+    if (tapCountRef.current >= 3) {
+      e.preventDefault()
+      tapCountRef.current = 0
+      if (tapTimerRef.current) clearTimeout(tapTimerRef.current)
+      window.location.href = window.location.pathname + '?_=' + Date.now()
+      return
+    }
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current)
+    tapTimerRef.current = setTimeout(() => { tapCountRef.current = 0 }, 600)
+  }, [])
 
   // Load popular tokens once
   useEffect(() => {
@@ -127,7 +143,7 @@ export default function Navbar() {
       <div className="w-full px-4 sm:px-6 h-14 flex items-center gap-3 md:gap-4">
         {/* Left — logo + nav links */}
         <div className="flex items-center gap-6 shrink-0">
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2 group" onClick={handleLogoTap}>
             <Image src="/logo.png" alt="TendanceSwap" width={32} height={32} className="rounded-lg" />
             <span className="text-xl font-bold hidden sm:flex items-baseline overflow-hidden">
               <span className="gradient-degen-text">T</span>
