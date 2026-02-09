@@ -8,8 +8,8 @@ import { Search, Loader2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { formatPrice, formatPercent, cn } from '@/lib/utils'
 
-const WalletMultiButton = dynamic(
-  () => import('@solana/wallet-adapter-react-ui').then(mod => mod.WalletMultiButton),
+const WalletButton = dynamic(
+  () => import('@/components/wallet/WalletButton'),
   { ssr: false }
 )
 
@@ -124,8 +124,7 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-40 border-b border-border bg-bg-primary/80 backdrop-blur-xl">
-      {/* Top row: logo + nav + wallet */}
-      <div className="w-full px-4 sm:px-6 h-14 flex items-center gap-4">
+      <div className="w-full px-4 sm:px-6 h-14 flex items-center gap-3 md:gap-4">
         {/* Left — logo + nav links */}
         <div className="flex items-center gap-6 shrink-0">
           <Link href="/" className="flex items-center gap-2 group">
@@ -151,8 +150,8 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Center — search bar (hidden on mobile, shown in second row) */}
-        <div className="hidden md:block flex-1 max-w-md mx-auto">
+        {/* Center — search bar */}
+        <div className="flex-1 min-w-0 md:max-w-md md:mx-auto">
           <div className="relative">
             <div className="relative">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
@@ -194,50 +193,8 @@ export default function Navbar() {
         </div>
 
         {/* Right — connect wallet */}
-        <div className="ml-auto shrink-0">
-          <WalletMultiButton className="!bg-bg-elevated !border !border-border !rounded-xl !h-9 !px-3 !text-xs !font-medium hover:!border-neon-purple/50 !transition-colors" />
-        </div>
-      </div>
-
-      {/* Mobile search row */}
-      <div className="md:hidden px-4 pb-3">
-        <div className="relative">
-          <div className="relative">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search tokens..."
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setTimeout(() => setFocused(false), 200)}
-              className="w-full bg-bg-elevated border border-border rounded-xl pl-9 pr-4 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-neon-purple/50 transition-colors"
-            />
-            {loading && (
-              <Loader2 size={14} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-gray-500" />
-            )}
-          </div>
-          {showDropdown && (
-            <div className="absolute top-full mt-2 w-full glass p-1 z-50 max-h-[400px] overflow-y-auto">
-              {!hasQuery && popular.length > 0 && (
-                <div className="px-3 pt-2 pb-1 text-[10px] uppercase tracking-wider text-gray-600">
-                  Popular tokens
-                </div>
-              )}
-              {loading && hasQuery && displayTokens.length === 0 ? (
-                <div className="px-3 py-4 text-sm text-gray-500 text-center">
-                  <Loader2 size={16} className="inline animate-spin mr-2" />
-                  Searching...
-                </div>
-              ) : displayTokens.length > 0 ? (
-                displayTokens.map(token => (
-                  <TokenRow key={token.address} token={token} />
-                ))
-              ) : hasQuery ? (
-                <div className="px-3 py-4 text-sm text-gray-500 text-center">No results</div>
-              ) : null}
-            </div>
-          )}
+        <div className="shrink-0">
+          <WalletButton />
         </div>
       </div>
     </nav>
