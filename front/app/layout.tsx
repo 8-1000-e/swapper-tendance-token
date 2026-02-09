@@ -4,6 +4,7 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import PriceMarquee from '@/components/layout/PriceMarquee'
 import SolanaProvider from '@/components/providers/WalletProvider'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 export const metadata: Metadata = {
   title: 'TendanceSwap - Solana Token Swapper',
@@ -41,6 +42,7 @@ export default function RootLayout({
           </main>
           <Footer />
         </SolanaProvider>
+        <SpeedInsights />
       </body>
     </html>
   )
