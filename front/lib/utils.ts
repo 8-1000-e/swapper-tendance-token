@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(price: number): string {
-  if (price >= 1) {
+  if (price >= 100) {
     return price.toLocaleString('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -14,19 +14,27 @@ export function formatPrice(price: number): string {
       maximumFractionDigits: 2,
     })
   }
+  if (price >= 1) {
+    return price.toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 4,
+    })
+  }
   if (price >= 0.01) {
     return price.toLocaleString('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 4,
-      maximumFractionDigits: 4,
+      maximumFractionDigits: 6,
     })
   }
-  // For very small prices, show significant digits
-  const str = price.toFixed(10)
+  // For very small prices, show leading zeros + 4 significant digits
+  const str = price.toFixed(12)
   const match = str.match(/^0\.0*/)
   const zeros = match ? match[0].length - 2 : 0
-  return `$0.0{${zeros}}${price.toFixed(zeros + 4).slice(zeros + 2)}`
+  return `$${price.toFixed(zeros + 4)}`
 }
 
 export function formatNumber(num: number): string {

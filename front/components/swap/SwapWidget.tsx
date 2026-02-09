@@ -16,8 +16,16 @@ import PriceImpact from './PriceImpact'
 import RouteInfo from './RouteInfo'
 import TokenSelector from './TokenSelector'
 import { Token } from '@/types'
-import { MOCK_TOKENS } from '@/data/mock'
-import { DEFAULT_SLIPPAGE } from '@/lib/constants'
+import { DEFAULT_SLIPPAGE, SOL_ADDRESS, USDC_ADDRESS } from '@/lib/constants'
+
+const DEFAULT_SOL: Token = {
+  address: SOL_ADDRESS, symbol: 'SOL', name: 'Solana',
+  price: 0, change24h: 0, volume24h: 0, marketCap: 0, fdv: 0, liquidity: 0,
+}
+const DEFAULT_USDC: Token = {
+  address: USDC_ADDRESS, symbol: 'USDC', name: 'USD Coin',
+  price: 1, change24h: 0, volume24h: 0, marketCap: 0, fdv: 0, liquidity: 0,
+}
 import { getSwapOrder, executeSwap, OrderResponse } from '@/lib/api'
 
 interface SwapWidgetProps {
@@ -27,8 +35,8 @@ interface SwapWidgetProps {
 }
 
 export default function SwapWidget({ initialFromToken, initialToToken, compact }: SwapWidgetProps) {
-  const defaultFrom = initialFromToken || MOCK_TOKENS.find(t => t.symbol === 'SOL')!
-  const defaultTo = initialToToken || MOCK_TOKENS.find(t => t.symbol === 'USDC')!
+  const defaultFrom = initialFromToken || DEFAULT_SOL
+  const defaultTo = initialToToken || DEFAULT_USDC
 
   const wallet = useWallet()
   const { setVisible } = useWalletModal()
@@ -57,21 +65,21 @@ export default function SwapWidget({ initialFromToken, initialToToken, compact }
   }, [swapResult])
 
   const outputAmount = quote
-    ? (parseInt(quote.outAmount) / Math.pow(10, tokenTo.decimals)).toFixed(
-        tokenTo.decimals >= 6 ? 6 : tokenTo.decimals
+    ? (parseInt(quote.outAmount) / Math.pow(10, (tokenTo.decimals ?? 9))).toFixed(
+        (tokenTo.decimals ?? 9) >= 6 ? 6 : (tokenTo.decimals ?? 9)
       )
     : ''
 
   const exchangeRate = quote
-    ? (parseInt(quote.outAmount) / Math.pow(10, tokenTo.decimals)) /
-      (parseInt(quote.inAmount) / Math.pow(10, tokenFrom.decimals))
+    ? (parseInt(quote.outAmount) / Math.pow(10, (tokenTo.decimals ?? 9))) /
+      (parseInt(quote.inAmount) / Math.pow(10, (tokenFrom.decimals ?? 9)))
     : null
 
   const usdValueFrom = quote ? quote.inUsdValue : 0
   const priceImpact = quote ? Math.abs(quote.priceImpact) : 0
   const minReceived = quote
-    ? (parseInt(quote.otherAmountThreshold) / Math.pow(10, tokenTo.decimals)).toFixed(
-        tokenTo.decimals >= 6 ? 6 : tokenTo.decimals
+    ? (parseInt(quote.otherAmountThreshold) / Math.pow(10, (tokenTo.decimals ?? 9))).toFixed(
+        (tokenTo.decimals ?? 9) >= 6 ? 6 : (tokenTo.decimals ?? 9)
       )
     : '0'
   const networkFee = quote
@@ -83,7 +91,7 @@ export default function SwapWidget({ initialFromToken, initialToToken, compact }
     ? quote.inUsdValue / (parseInt(quote.inAmount) / 1e9)
     : quote && tokenTo.address === SOL_MINT
       ? quote.outUsdValue / (parseInt(quote.outAmount) / 1e9)
-      : MOCK_TOKENS.find(t => t.symbol === 'SOL')?.price ?? 0
+      : 0
   const networkFeeUsd = networkFee * solPriceUsd
   const usdValueTo = quote ? quote.outUsdValue - networkFeeUsd : 0
 
@@ -129,7 +137,7 @@ export default function SwapWidget({ initialFromToken, initialToToken, compact }
       return
     }
 
-    const amountRaw = Math.round(input * Math.pow(10, from.decimals)).toString()
+    const amountRaw = Math.round(input * Math.pow(10, (from.decimals ?? 9))).toString()
     const slippageBps = Math.round(slip * 100)
 
     if (!silent) setQuoteLoading(true)
@@ -218,7 +226,7 @@ export default function SwapWidget({ initialFromToken, initialToToken, compact }
 
     try {
       // 1. Re-fetch a fresh quote (quotes expire quickly)
-      const amountRaw = Math.round(parseFloat(amountFrom) * Math.pow(10, tokenFrom.decimals)).toString()
+      const amountRaw = Math.round(parseFloat(amountFrom) * Math.pow(10, (tokenFrom.decimals ?? 9))).toString()
       const slippageBps = Math.round(slippage * 100)
 
       const freshQuote = await getSwapOrder({

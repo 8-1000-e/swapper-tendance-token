@@ -1,26 +1,69 @@
+export interface TokenTxns {
+  buys: number
+  sells: number
+}
+
+export interface TokenTopHolder {
+  address: string
+  amount: number
+  percentage: number
+}
+
 export interface Token {
+  address: string
+  pairAddress?: string
+  symbol: string
+  name: string
+  decimals?: number
+  price: number
+  priceNative?: number
+  change24h: number
+  change1h?: number
+  change6h?: number
+  change5m?: number
+  volume24h: number
+  volume1h?: number
+  volume6h?: number
+  volume5m?: number
+  marketCap: number
+  fdv: number
+  supply?: number
+  holders?: number
+  liquidity: number
+  description?: string
+  imageUrl?: string
+  website?: string
+  twitter?: string
+  telegram?: string
+  discord?: string
+  category?: TokenCategory[]
+  sparkline?: number[]
+  pairCreatedAt?: number
+  txns24h?: TokenTxns
+  txns1h?: TokenTxns
+  txns6h?: TokenTxns
+  txns5m?: TokenTxns
+  topHolders?: TokenTopHolder[]
+  mintAuthority?: boolean
+  freezeAuthority?: boolean
+}
+
+export type TokenCategory = 'hot' | 'new' | 'gainer' | 'loser'
+
+export interface TrendingToken {
   address: string
   symbol: string
   name: string
-  decimals: number
   price: number
   change24h: number
   volume24h: number
   marketCap: number
   fdv: number
-  supply: number
-  holders: number
   liquidity: number
-  description: string
-  website?: string
-  twitter?: string
-  telegram?: string
-  discord?: string
-  category: TokenCategory[]
-  sparkline: number[]
+  imageUrl: string | null
+  pairCreatedAt: number | null
+  boostAmount: number
 }
-
-export type TokenCategory = 'hot' | 'new' | 'gainer' | 'loser'
 
 export interface OHLCVData {
   time: number

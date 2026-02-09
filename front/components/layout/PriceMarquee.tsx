@@ -1,12 +1,41 @@
 'use client'
 
-import { MOCK_TOKENS } from '@/data/mock'
-import { formatPrice, formatPercent } from '@/lib/utils'
-import { cn } from '@/lib/utils'
+import { useState, useEffect } from 'react'
+import { formatPrice, formatPercent, cn } from '@/lib/utils'
+
+interface MarqueeToken {
+  symbol: string
+  price: number
+  change24h: number
+}
 
 export default function PriceMarquee() {
-  const displayTokens = MOCK_TOKENS.filter(t => t.category.length > 0).slice(0, 12)
-  const items = [...displayTokens, ...displayTokens] // duplicate for seamless loop
+  const [tokens, setTokens] = useState<MarqueeToken[]>([])
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch('/api/trending')
+        if (!res.ok) return
+        const data = await res.json()
+        const items: MarqueeToken[] = (data ?? []).slice(0, 12).map((t: any) => ({
+          symbol: t.symbol,
+          price: t.price,
+          change24h: t.change24h,
+        }))
+        if (items.length > 0) setTokens(items)
+      } catch {
+        // silent
+      }
+    }
+    load()
+    const interval = setInterval(load, 60_000)
+    return () => clearInterval(interval)
+  }, [])
+
+  if (tokens.length === 0) return null
+
+  const items = [...tokens, ...tokens] // duplicate for seamless loop
 
   return (
     <div className="w-full overflow-hidden border-b border-border bg-bg-surface/50">
