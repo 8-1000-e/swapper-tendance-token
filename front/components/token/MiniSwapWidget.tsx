@@ -1,19 +1,29 @@
 'use client'
 
 import { Token } from '@/types'
-import { MOCK_TOKENS } from '@/data/mock'
+import { USDC_ADDRESS } from '@/lib/constants'
 import SwapWidget from '@/components/swap/SwapWidget'
 
 interface MiniSwapWidgetProps {
   token: Token
 }
 
-export default function MiniSwapWidget({ token }: MiniSwapWidgetProps) {
-  const usdc = MOCK_TOKENS.find(t => t.symbol === 'USDC')!
+const USDC_TOKEN: Token = {
+  address: USDC_ADDRESS,
+  symbol: 'USDC',
+  name: 'USD Coin',
+  price: 1,
+  change24h: 0,
+  volume24h: 0,
+  marketCap: 0,
+  fdv: 0,
+  liquidity: 0,
+}
 
+export default function MiniSwapWidget({ token }: MiniSwapWidgetProps) {
   return (
     <SwapWidget
-      initialFromToken={usdc}
+      initialFromToken={USDC_TOKEN}
       initialToToken={token}
       compact
     />
