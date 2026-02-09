@@ -134,16 +134,19 @@ export default function TokenHeader({ token }: TokenHeaderProps) {
         </div>
       </div>
 
-      {/* Row 2: Inline stats strip — no cards, just data */}
+      {/* Row 2: Inline stats strip — auto-scroll on mobile, pause on touch to let user scroll manually */}
       {inlineStats.length > 0 && (
-        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar text-xs">
-          {inlineStats.map((stat, i) => (
-            <span key={stat.label} className="flex items-center gap-1 flex-shrink-0">
-              {i > 0 && <span className="text-gray-700 mx-1.5">·</span>}
-              <span className="text-gray-500">{stat.label}</span>
-              <span className="text-white font-mono font-medium">{stat.value}</span>
-            </span>
-          ))}
+        <div className="overflow-x-auto no-scrollbar text-xs pause-on-interact">
+          <div className="flex items-center gap-1 w-max animate-marquee sm:animate-none">
+            {/* Duplicate for seamless loop on mobile */}
+            {[...inlineStats, ...inlineStats].map((stat, i) => (
+              <span key={`${stat.label}-${i}`} className="flex items-center gap-1 flex-shrink-0">
+                {i > 0 && <span className="text-gray-700 mx-1.5">·</span>}
+                <span className="text-gray-500">{stat.label}</span>
+                <span className="text-white font-mono font-medium">{stat.value}</span>
+              </span>
+            ))}
+          </div>
         </div>
       )}
     </div>

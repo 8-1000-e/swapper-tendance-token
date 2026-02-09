@@ -97,19 +97,23 @@ export default function TokenPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
-        {/* Main column */}
-        <div className="lg:col-span-2 space-y-4">
+        {/* Chart — always first */}
+        <div className="lg:col-span-2 order-1">
           <PriceChart token={token} />
-          <TransactionsTable token={token} />
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-4">
+        {/* Swap widget — second on mobile, sidebar on desktop */}
+        <div className="order-2 lg:order-3 lg:row-span-3">
           <div className="lg:sticky lg:top-20 space-y-4">
             <MiniSwapWidget token={token} />
             <TokenDescription token={token} />
             <TopHolders token={token} />
           </div>
+        </div>
+
+        {/* Transactions — after swap on mobile */}
+        <div className="lg:col-span-2 order-3 lg:order-2">
+          <TransactionsTable token={token} />
         </div>
       </div>
     </motion.div>

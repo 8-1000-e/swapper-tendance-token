@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -8,8 +8,8 @@ import { Search, Loader2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { formatPrice, formatPercent, cn } from '@/lib/utils'
 
-const WalletMultiButton = dynamic(
-  () => import('@solana/wallet-adapter-react-ui').then(mod => mod.WalletMultiButton),
+const WalletButton = dynamic(
+  () => import('@/components/wallet/WalletButton'),
   { ssr: false }
 )
 
@@ -31,6 +31,22 @@ export default function Navbar() {
   const [loading, setLoading] = useState(false)
   const [popularLoaded, setPopularLoaded] = useState(false)
   const abortRef = useRef<AbortController | null>(null)
+  const tapCountRef = useRef(0)
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleLogoTap = useCallback((e: React.MouseEvent) => {
+    if (window.innerWidth >= 768) return
+    tapCountRef.current++
+    if (tapCountRef.current >= 3) {
+      e.preventDefault()
+      tapCountRef.current = 0
+      if (tapTimerRef.current) clearTimeout(tapTimerRef.current)
+      window.location.href = window.location.pathname + '?_=' + Date.now()
+      return
+    }
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current)
+    tapTimerRef.current = setTimeout(() => { tapCountRef.current = 0 }, 600)
+  }, [])
 
   // Load popular tokens once
   useEffect(() => {
@@ -124,11 +140,11 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-40 border-b border-border bg-bg-primary/80 backdrop-blur-xl">
-      <div className="w-full px-6 h-16 flex items-center">
+      <div className="w-full px-4 sm:px-6 h-14 flex items-center gap-3 md:gap-4">
         {/* Left — logo + nav links */}
         <div className="flex items-center gap-6 shrink-0">
-          <Link href="/" className="flex items-center gap-2 group">
-            <Image src="/logo.png" alt="TendanceSwap" width={36} height={36} className="rounded-lg" />
+          <Link href="/" className="flex items-center gap-2 group" onClick={handleLogoTap}>
+            <Image src="/logo.png" alt="TendanceSwap" width={32} height={32} className="rounded-lg" />
             <span className="text-xl font-bold hidden sm:flex items-baseline overflow-hidden">
               <span className="gradient-degen-text">T</span>
               <span className="gradient-degen-text max-w-0 group-hover:max-w-[200px] transition-all duration-500 ease-in-out overflow-hidden whitespace-nowrap">endance</span>
@@ -151,7 +167,7 @@ export default function Navbar() {
         </div>
 
         {/* Center — search bar */}
-        <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-md px-4">
+        <div className="flex-1 min-w-0 md:max-w-md md:mx-auto">
           <div className="relative">
             <div className="relative">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
@@ -193,8 +209,8 @@ export default function Navbar() {
         </div>
 
         {/* Right — connect wallet */}
-        <div className="ml-auto shrink-0">
-          <WalletMultiButton className="!bg-bg-elevated !border !border-border !rounded-xl !h-10 !px-4 !text-sm !font-medium hover:!border-neon-purple/50 !transition-colors" />
+        <div className="shrink-0">
+          <WalletButton />
         </div>
       </div>
     </nav>

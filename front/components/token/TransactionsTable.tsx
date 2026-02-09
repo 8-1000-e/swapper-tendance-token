@@ -91,12 +91,12 @@ export default function TransactionsTable({ token }: TransactionsTableProps) {
           <table className="w-full text-xs">
             <thead>
               <tr className="text-gray-500 border-b border-border">
-                <th className="text-left px-4 py-2 font-medium w-12">Side</th>
-                <th className="text-right px-4 py-2 font-medium">Amount</th>
-                <th className="text-right px-4 py-2 font-medium">Price</th>
-                <th className="text-right px-4 py-2 font-medium">Total</th>
-                <th className="text-right px-4 py-2 font-medium hidden sm:table-cell">Maker</th>
-                <th className="text-right px-4 py-2 font-medium w-16">Age</th>
+                <th className="text-left px-2 sm:px-4 py-2 font-medium w-12">Side</th>
+                <th className="text-right px-2 sm:px-4 py-2 font-medium">Amount</th>
+                <th className="text-right px-2 sm:px-4 py-2 font-medium hidden sm:table-cell">Price</th>
+                <th className="text-right px-2 sm:px-4 py-2 font-medium">Total</th>
+                <th className="text-right px-2 sm:px-4 py-2 font-medium hidden md:table-cell">Maker</th>
+                <th className="text-right px-2 sm:px-4 py-2 font-medium w-14 sm:w-16">Age</th>
               </tr>
             </thead>
             <tbody>
@@ -112,7 +112,7 @@ export default function TransactionsTable({ token }: TransactionsTableProps) {
                       transition={{ duration: 1 }}
                       className="border-b border-border/30 hover:bg-white/[0.02] transition-colors"
                     >
-                      <td className="px-4 py-2">
+                      <td className="px-2 sm:px-4 py-2">
                         <span className={cn(
                           'font-mono font-semibold',
                           isBuy ? 'text-[#00FF66]' : 'text-[#FF3B3B]'
@@ -120,16 +120,16 @@ export default function TransactionsTable({ token }: TransactionsTableProps) {
                           {isBuy ? 'BUY' : 'SELL'}
                         </span>
                       </td>
-                      <td className="text-right px-4 py-2 font-mono text-gray-300">
+                      <td className="text-right px-2 sm:px-4 py-2 font-mono text-gray-300">
                         {formatNumber(tx.amount)}
                       </td>
-                      <td className="text-right px-4 py-2 font-mono text-gray-400">
+                      <td className="text-right px-2 sm:px-4 py-2 font-mono text-gray-400 hidden sm:table-cell">
                         {formatPrice(tx.price)}
                       </td>
-                      <td className="text-right px-4 py-2 font-mono text-white">
+                      <td className="text-right px-2 sm:px-4 py-2 font-mono text-white">
                         ${formatNumber(tx.totalUsd)}
                       </td>
-                      <td className="text-right px-4 py-2 font-mono hidden sm:table-cell">
+                      <td className="text-right px-2 sm:px-4 py-2 font-mono hidden md:table-cell">
                         <a
                           href={`https://solscan.io/account/${tx.wallet}`}
                           target="_blank"
@@ -139,7 +139,7 @@ export default function TransactionsTable({ token }: TransactionsTableProps) {
                           {formatAddress(tx.wallet)}
                         </a>
                       </td>
-                      <td className="text-right px-4 py-2 text-gray-600">
+                      <td className="text-right px-2 sm:px-4 py-2 text-gray-600">
                         {timeAgo(tx.timestamp)}
                       </td>
                     </motion.tr>
