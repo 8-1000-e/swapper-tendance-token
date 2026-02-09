@@ -14,13 +14,13 @@ const WalletMultiButton = dynamic(
 const DEEPLINK_WALLETS = [
   {
     name: 'Phantom',
-    color: '#AB9FF2',
+    icon: '/wallets/phantom.svg',
     buildUrl: (url: string) =>
       `https://phantom.app/ul/browse/${encodeURIComponent(url)}`,
   },
   {
     name: 'Solflare',
-    color: '#FC8E2A',
+    icon: '/wallets/solflare.svg',
     buildUrl: (url: string) =>
       `https://solflare.com/ul/v1/browse/${encodeURIComponent(url)}`,
   },
@@ -82,9 +82,10 @@ export default function WalletButton() {
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
             >
-              <div
-                className="w-5 h-5 rounded-full shrink-0"
-                style={{ background: w.color }}
+              <img
+                src={w.icon}
+                alt={w.name}
+                className="w-6 h-6 rounded-lg shrink-0"
               />
               <span className="text-sm font-medium text-white">{w.name}</span>
               <ExternalLink size={12} className="ml-auto text-gray-500" />
