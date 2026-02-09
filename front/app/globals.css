@@ -100,4 +100,15 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  .pause-on-interact:hover > *,
+  .pause-on-interact:active > * {
+    animation-play-state: paused !important;
+  }
+}
+
+@media (pointer: coarse) {
+  .pause-on-interact:active > * {
+    animation-play-state: paused !important;
+  }
 }

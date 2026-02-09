@@ -124,11 +124,12 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-40 border-b border-border bg-bg-primary/80 backdrop-blur-xl">
-      <div className="w-full px-6 h-16 flex items-center">
+      {/* Top row: logo + nav + wallet */}
+      <div className="w-full px-4 sm:px-6 h-14 flex items-center gap-4">
         {/* Left — logo + nav links */}
         <div className="flex items-center gap-6 shrink-0">
           <Link href="/" className="flex items-center gap-2 group">
-            <Image src="/logo.png" alt="TendanceSwap" width={36} height={36} className="rounded-lg" />
+            <Image src="/logo.png" alt="TendanceSwap" width={32} height={32} className="rounded-lg" />
             <span className="text-xl font-bold hidden sm:flex items-baseline overflow-hidden">
               <span className="gradient-degen-text">T</span>
               <span className="gradient-degen-text max-w-0 group-hover:max-w-[200px] transition-all duration-500 ease-in-out overflow-hidden whitespace-nowrap">endance</span>
@@ -150,8 +151,8 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Center — search bar */}
-        <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-md px-4">
+        {/* Center — search bar (hidden on mobile, shown in second row) */}
+        <div className="hidden md:block flex-1 max-w-md mx-auto">
           <div className="relative">
             <div className="relative">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
@@ -194,7 +195,49 @@ export default function Navbar() {
 
         {/* Right — connect wallet */}
         <div className="ml-auto shrink-0">
-          <WalletMultiButton className="!bg-bg-elevated !border !border-border !rounded-xl !h-10 !px-4 !text-sm !font-medium hover:!border-neon-purple/50 !transition-colors" />
+          <WalletMultiButton className="!bg-bg-elevated !border !border-border !rounded-xl !h-9 !px-3 !text-xs !font-medium hover:!border-neon-purple/50 !transition-colors" />
+        </div>
+      </div>
+
+      {/* Mobile search row */}
+      <div className="md:hidden px-4 pb-3">
+        <div className="relative">
+          <div className="relative">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <input
+              type="text"
+              placeholder="Search tokens..."
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setTimeout(() => setFocused(false), 200)}
+              className="w-full bg-bg-elevated border border-border rounded-xl pl-9 pr-4 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-neon-purple/50 transition-colors"
+            />
+            {loading && (
+              <Loader2 size={14} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-gray-500" />
+            )}
+          </div>
+          {showDropdown && (
+            <div className="absolute top-full mt-2 w-full glass p-1 z-50 max-h-[400px] overflow-y-auto">
+              {!hasQuery && popular.length > 0 && (
+                <div className="px-3 pt-2 pb-1 text-[10px] uppercase tracking-wider text-gray-600">
+                  Popular tokens
+                </div>
+              )}
+              {loading && hasQuery && displayTokens.length === 0 ? (
+                <div className="px-3 py-4 text-sm text-gray-500 text-center">
+                  <Loader2 size={16} className="inline animate-spin mr-2" />
+                  Searching...
+                </div>
+              ) : displayTokens.length > 0 ? (
+                displayTokens.map(token => (
+                  <TokenRow key={token.address} token={token} />
+                ))
+              ) : hasQuery ? (
+                <div className="px-3 py-4 text-sm text-gray-500 text-center">No results</div>
+              ) : null}
+            </div>
+          )}
         </div>
       </div>
     </nav>
