@@ -103,7 +103,7 @@ export default function TokenPage() {
         </div>
 
         {/* Swap widget — second on mobile, sidebar on desktop */}
-        <div className="order-2 lg:order-3 lg:row-span-3">
+        <div className="order-2 lg:order-3 lg:row-start-1 lg:col-start-3 lg:row-span-3">
           <div className="lg:sticky lg:top-20 space-y-4">
             <MiniSwapWidget token={token} />
             <TokenDescription token={token} />
