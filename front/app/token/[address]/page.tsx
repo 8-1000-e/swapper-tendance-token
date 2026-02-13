@@ -90,7 +90,22 @@ export default function TokenPage() {
         Back
       </Link>
 
+      {/* Banner */}
+      {token.bannerUrl && (
+        <div className="relative w-full h-32 sm:h-40 rounded-xl overflow-hidden mb-4">
+          <img
+            src={token.bannerUrl}
+            alt={`${token.name} banner`}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A14] via-transparent to-transparent" />
+        </div>
+      )}
+
       <TokenHeader token={token} />
+
+      {/* About — right below header/banner */}
+      <TokenDescription token={token} />
 
       <div className="mt-4">
         <StatsGrid token={token} />
@@ -106,7 +121,6 @@ export default function TokenPage() {
         <div className="order-2 lg:order-3 lg:row-start-1 lg:col-start-3 lg:row-span-3">
           <div className="lg:sticky lg:top-20 space-y-4">
             <MiniSwapWidget token={token} />
-            <TokenDescription token={token} />
             <TopHolders token={token} />
           </div>
         </div>

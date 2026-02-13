@@ -24,6 +24,7 @@ interface DexPair {
   pairCreatedAt?: number
   info?: {
     imageUrl?: string
+    header?: string
     websites?: { url: string; label?: string }[]
     socials?: { url: string; type: string }[]
   }
@@ -184,6 +185,7 @@ export async function GET(
       liquidity: best.liquidity?.usd ?? 0,
       supply: uiSupply > 0 ? uiSupply : undefined,
       imageUrl: best.info?.imageUrl ?? undefined,
+      bannerUrl: best.info?.header ?? undefined,
       website: best.info?.websites?.[0]?.url ?? undefined,
       twitter: twitterSocial?.url ?? undefined,
       telegram: telegramSocial?.url ?? undefined,

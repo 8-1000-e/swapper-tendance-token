@@ -32,6 +32,7 @@ export interface Token {
   liquidity: number
   description?: string
   imageUrl?: string
+  bannerUrl?: string
   website?: string
   twitter?: string
   telegram?: string
