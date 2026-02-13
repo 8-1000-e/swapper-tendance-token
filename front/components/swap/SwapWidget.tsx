@@ -365,13 +365,6 @@ export default function SwapWidget({ initialFromToken, initialToToken, compact }
             </motion.div>
           )}
 
-          {/* TODO: remove — test button for tx notification */}
-          <button
-            onClick={() => setSwapResult('4sGjMW1sUnHzSxGspuhSqLDJmpVZ6jbLaNfGbnQTSd3TGEHqYxRcUmhFqqASjPFpFdNWoihHAQjTGPYyY2Namode')}
-            className="mt-2 text-[10px] text-gray-600 hover:text-gray-400 transition-colors"
-          >
-            [test tx notif]
-          </button>
 
           <div className="mt-4">
             <SwapButton
