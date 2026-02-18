@@ -10,6 +10,10 @@ import { Analytics } from '@vercel/analytics/next'
 export const metadata: Metadata = {
   title: 'TendanceSwap - Solana Token Swapper',
   description: 'The fastest way to swap Solana tokens. Powered by Jupiter.',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 }
 
 export default function RootLayout({
